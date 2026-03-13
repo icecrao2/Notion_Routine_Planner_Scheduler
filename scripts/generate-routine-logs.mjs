@@ -54,6 +54,10 @@ async function main() {
 
     const createdPage = await notionRequest("/pages", "POST", {
       parent: { data_source_id: ROUTINE_LOG_DS_ID },
+      icon: {
+        type: "emoji",
+        emoji: "📄"
+      },
       properties: {
         [LOG_TITLE_PROPERTY]: {
           title: [
