@@ -1,0 +1,47 @@
+name: Generate Routine Logs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "5 15 * * *" # 매일 00:05 KST
+
+permissions:
+  contents: read
+
+concurrency:
+  group: notion-routine-log
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate daily routine logs
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROUTINE_PLAN_DS_ID: ${{ secrets.ROUTINE_PLAN_DS_ID }}
+          ROUTINE_LOG_DS_ID: ${{ secrets.ROUTINE_LOG_DS_ID }}
+
+          PLAN_TITLE_PROPERTY: 루틴
+          PLAN_STATUS_PROPERTY: 상태
+          PLAN_DATE_PROPERTY: 날짜
+
+          LOG_TITLE_PROPERTY: Name
+          LOG_DATE_PROPERTY: 날짜
+          LOG_DONE_PROPERTY: 수행
+          LOG_PLAN_RELATION_PROPERTY: 루틴계획
+
+          TARGET_STATUS: 진행 중
+          NOTION_VERSION: 2026-03-11
+          TZ: Asia/Seoul
+
+        run: node scripts/generate-routine-logs.mjs
